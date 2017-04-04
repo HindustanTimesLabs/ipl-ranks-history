@@ -19,8 +19,8 @@ colors.forEach(function(d){
 function vertical(){
 
 	var	margin = {top: 30, right: 30, bottom: 20, left: 120},
-		width = 300 - margin.left - margin.right;
-		height = (600 * 8) - margin.top - margin.bottom;
+		width = window.innerWidth - margin.left - margin.right;
+		height = 400 - margin.top - margin.bottom;
 
 	var stroke_off = {
 		width: 10,
@@ -37,18 +37,18 @@ function vertical(){
 	var g = svg.append("g")
 			.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 	  
-	var xScale = d3.scaleLinear().range([width, 0]),
+	var xScale = d3.scaleLinear().range([0, width]),
 		yScale = d3.scaleLinear().range([height, 0]);
 
-	var yAxis = d3.axisLeft(yScale)
-			.ticks(150);
+	var xAxis = d3.axisTop(xScale)
+			.ticks(10);
 
 // d3.curveCatmullRom.alpha(1)
 //d3.curveStepAfter
 	var line = d3.line()
 	    // .curve(d3.curveBundle.beta(1))
-	    .x(function(d) { return xScale(d.position); })
-	    .y(function(d) { return yScale(d.index); })
+	    .x(function(d) { return xScale(d.index); })
+	    .y(function(d) { return yScale(d.position); })
 	    .defined(function(d) { return isNaN(d.position) ? false : true; });
 
 	d3.queue()
@@ -81,26 +81,25 @@ function vertical(){
 	    };
 	  });
 
-	  xScale.domain([
+	  xScale.domain(d3.extent(positions, d => +d.index));
+
+		yScale.domain([
 	    d3.max(teams, function(c) { return d3.max(c.values, function(d) { return d.position; }); }),
 	    d3.min(teams, function(c) { return d3.min(c.values, function(d) { return d.position; }); })
 	  ]);
 
-		yScale.domain(d3.extent(positions, d => +d.index));
-
-		yAxis.tickFormat(d => {
-
+		xAxis.tickFormat(d => {
 			return formatDate(lookup.filter(c => c.index == d)[0].date) 
 		})
 
 	  g.append("g")
 	      .attr("class", "axis axis--x")
 	      .attr("transform", "translate(0," + 0 + ")")
-	      .call(d3.axisTop(xScale));
+	      .call(xAxis);
 
 	  var yAxisEl = g.append("g")
 	      .attr("class", "axis axis--y")
-	      .call(yAxis)
+	      .call(d3.axisLeft(yScale))
 	      .attr("transform", "translate(-20," + 0 + ")")
 	  
 	  yAxisEl.append("text")
@@ -109,17 +108,17 @@ function vertical(){
 	      .attr("y", -margin.left + 30)
 	      .attr("dy", "0.71em")
 	      .attr("fill", "#000")
-	      .text("More recent games →");
+	      .text("Best team →");
 
 	  yAxisEl.append("text")
 	  		.attr("class", "time-label")
 	  		.attr("transform", "rotate(-90)")
 	      .attr("y", -margin.left + 30)
-	      .attr("x", -320)
+	      .attr("x", -height)
 	      .attr("text-anchor", "start")
 	      .attr("dy", "0.71em")
 	      .attr("fill", "#000")
-	      .text("← Older games");
+	      .text("← Worst team");
 
 	  var team = g.selectAll(".team")
 	    .data(teams)
@@ -186,7 +185,7 @@ function vertical(){
 
 			// get index and position based on mouse location
 			var team = d.id;
-			var index = Math.round(yScale.invert(y));
+			var index = Math.round(xScale.invert(x));
 			var position = d.values.filter(c => c.index == index)[0].position;
 			
 			// lookup date
@@ -216,10 +215,12 @@ function vertical(){
 	  	// left
 	  	// determine left side of svg
 	  	var svg_left = (window.innerWidth / 2) - (width / 2);
-	  	var tip_left = svg_left + width + margin.right;
+	  	var tip_left = xScale(index);
+	  	console.log(index);
+	  	console.log(tip_left);
 
 	  	$(".tip").css({
-	  		top: tip_top,
+	  		top: $("#viz-wrapper").offset().top - $(".tip").height() - margin.top,
 	  		left: tip_left,
 	  		border: "2px solid " + colors.filter(c => slugify(d.id) == c.slug)[0].bg
 	  	});
