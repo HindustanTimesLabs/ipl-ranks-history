@@ -27,44 +27,105 @@ colors.forEach(function(d){
 // years (each one gets a chart)
 var years = ["all","2016","2015","2014","2013","2012","2011","2010","2009","2008"];
 
-allSeasons(years[0]);
+var tickValues_obj = {
+	"all" : [1,43,78,118,164,212,260,298,339],
+	"2016" : [339,361],
+	"2015" : [298,321],
+	"2014" : [260,275],
+	"2013" : [212, 240],
+	"2012" : [164,191],
+	"2011" : [118,141],
+	"2010" : [78,98],
+	"2009" : [43,56],
+	"2008" : [1,14]
+}
 
-// vertical
-function allSeasons(year){
 
-	var svg = d3.select(".viz-wrapper.vw-" + year).append("svg")
-			.attr("width", width + margin.left + margin.right)
-			.attr("height", height + margin.top + margin.bottom);
+// a bunch of awesome objects
+var positions_filtered = {},
+	year_indexes = {},
+	positions_obj = {},
+	lookup_obj = {};
 
-	var g = svg.append("g")
-			.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-	  
-	var xScale = d3.scaleLinear().range([0, width]),
-		yScale = d3.scaleLinear().range([height, 0]);
+years.forEach(function(d){
+	positions_filtered[d] = [];
+	year_indexes[d] = [];
+	positions_obj[d] = [];
+	lookup_obj[d] = [];
+});
 
-	var xAxis = d3.axisTop(xScale)
-			.tickValues([1,43,78,118,164,212,260,298,339])
-			.tickSizeInner(-height - margin.bottom)
-
-// d3.curveCatmullRom.alpha(1)
-//d3.curveStepAfter
-	var line = d3.line()
-	    .curve(d3.curveBundle.beta(1))
-	    .x(function(d) { return xScale(d.index); })
-	    .y(function(d) { return yScale(d.position); })
-	    .defined(function(d) { return isNaN(d.position) ? false : true; });
-
-	d3.queue()
+d3.queue()
 		.defer(d3.csv, "data/viz2.csv")
 		.defer(d3.csv, "data/date_lookup.csv")
 		.defer(d3.csv, "data/data.csv")
-		.await(ready)
+		.await(ready);
 
-	function ready(error, positions, lookup, stats) {
-	  if (error) throw error;
+function ready(error, positions, lookup, stats) {
+  if (error) throw error;
 
-	  // positions types function
-	  positions.forEach(function(d, _, columns) {
+  years.forEach(draw);
+
+  function draw(year){
+
+  	// stash the lookup and positions
+  	lookup_obj[year] = lookup;
+  	positions_obj[year] = positions;
+
+  	// filter positions by year
+
+  	// get list of indexes for the year
+  	if (year != "all"){
+  		year_indexes[year] = lookup_obj[year].filter(d => d.year == year).map(d => d.index.toString());
+  	} else {
+  		year_indexes[year] = lookup_obj[year].map(d => d.index.toString());
+  	}
+  	
+  	// filter the positions by year
+  	year_indexes[year].forEach(d => {
+  		
+  		var curr_position = positions_obj[year].filter((c) => {			
+  			return c.index == d
+  		});
+
+  		positions_filtered[year].push(curr_position[0]);
+
+  	});
+
+  	var draw_positions = positions_filtered[year];
+  	draw_positions.columns = positions_obj[year].columns;;
+
+  	// make obects for all the stuff
+  	var svg = {},
+  		g = {},
+  		xScale = {},
+  		yScale = {},
+  		xAxis = {},
+  		yAxis = {},
+  		line = {};
+
+  	svg[year] = d3.select(".viz-wrapper.vw-" + year).append("svg")
+				.attr("width", width + margin.left + margin.right)
+				.attr("height", height + margin.top + margin.bottom);
+
+		g[year] = svg[year].append("g")
+				.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+		  
+		xScale[year] = d3.scaleLinear().range([0, width]),
+			yScale[year] = d3.scaleLinear().range([height, 0]);
+
+		xAxis[year] = d3.axisTop(xScale[year])
+				.tickValues(tickValues_obj[year])
+				.tickSizeInner(-height - margin.bottom);
+
+		yAxis[year] = d3.axisLeft(yScale[year]).ticks(year == "all" ? 10 : 8);
+
+		line[year] = d3.line()
+		    .curve(d3.curveBundle.beta(1))
+		    .x(function(d) { return xScale[year](d.index); })
+		    .y(function(d) { return yScale[year](d.position); })
+		    .defined(function(d) { return isNaN(d.position) ? false : true; });
+
+	  draw_positions.forEach(function(d, _, columns) {
 		  for (var i = 1, n = columns.length, c; i < n; ++i) d[c = columns[i]] = +d[c];
 		  return d;
 		});
@@ -75,43 +136,46 @@ function allSeasons(year){
 	  	return d;
 	  });
 
-	  var teams = positions.columns.slice(1).map(function(id) {
+	  var teams = draw_positions.columns.slice(1).map(function(id) {
 	    return {
 	      id: id,
-	      values: positions.map(function(d) {
+	      values: draw_positions.map(function(d) {
 	        return {index: +d.index, position: +d[id]};
 	      })
 	    };
 	  });
 
-	  xScale.domain(d3.extent(positions, d => +d.index));
+	  xScale[year].domain(d3.extent(draw_positions, d => +d.index));
 
-		yScale.domain([
+		yScale[year].domain([
 	    d3.max(teams, function(c) { return d3.max(c.values, function(d) { return d.position; }); }),
 	    d3.min(teams, function(c) { return d3.min(c.values, function(d) { return d.position; }); })
 	  ]);
 
-		xAxis.tickFormat(d => {
-			return formatYear(lookup.filter(c => c.index == d)[0].date) + "→"
+		xAxis[year].tickFormat(d => {
+
+			var unformatted_date = lookup.filter(c => c.index == d)[0].date;
+
+			return year == "all" ? formatYear(unformatted_date) + "→" : formatMonth(unformatted_date) + "→";
 		});
 
-	  var xAxisEl = g.append("g")
+	  var xAxisEl = g[year].append("g")
 	      .attr("class", "axis axis--x")
 	      .attr("transform", "translate(0," + -10 + ")")
-	      .call(xAxis);
+	      .call(xAxis[year]);
 
 	  xAxisEl.append("text")
 	  		.attr("class","time-label")
 	  		.attr("y", -18)
-	  		.attr("x", 27)
-	  		.text("Season")
+	  		.attr("x", year == "all" ? 16 : 24)
+	  		.text(year == "all" ? "Year" : "Month")
 
 	  d3.selectAll(".axis.axis--x .tick text")
 	  		.attr("text-anchor", "start")
 
-	  var yAxisEl = g.append("g")
+	  var yAxisEl = g[year].append("g")
 	      .attr("class", "axis axis--y")
-	      .call(d3.axisLeft(yScale))
+	      .call(yAxis[year])
 	      .attr("transform", "translate(-20," + 0 + ")")
 	  
 	  yAxisEl.append("text")
@@ -132,7 +196,7 @@ function allSeasons(year){
 	      .attr("fill", "#000")
 	      .text("← Worst");
 
-	  var team = g.selectAll(".team")
+	  var team = g[year].selectAll(".team")
 	    .data(teams)
 	    .enter().append("g")
 	      .attr("class", function(d) { return "team unset " + slugify(d.id); })
@@ -142,7 +206,7 @@ function allSeasons(year){
 		// white line
 	  team.append("path")
 	      .attr("class", function(d) { return "line-out " + slugify(d.id); })
-	      .attr("d", function(d) { return line(d.values); })
+	      .attr("d", function(d) { return line[year](d.values); })
 	      .style("stroke", d => colors.filter(c => c.slug == slugify(d.id))[0].bg)
 	      .style("stroke-width", stroke_off.width + 4)
 	      .style("opacity", stroke_off.opacity)
@@ -152,7 +216,7 @@ function allSeasons(year){
 	  // colored line
 	  team.append("path")
 	      .attr("class", function(d) { return "line " + slugify(d.id); })
-	      .attr("d", function(d) { return line(d.values); })
+	      .attr("d", function(d) { return line[year](d.values); })
 	      .style("stroke", d=> {
 	      	// return colors.filter(c => c.slug == slugify(d.id))[0].color
 	      	return "url(#diagonalHatch-" + slugify(d.id) + ")"
@@ -187,7 +251,7 @@ function allSeasons(year){
 		});
 
 	  $(".viz-wrapper.vw-" + year).append("<div class='tip'></div>")
-	  $(".tip").hide();
+	  $(".viz-wrapper.vw-" + year + " .tip").hide();
 
 	  function mouseover(d){
 
@@ -200,7 +264,7 @@ function allSeasons(year){
 
 			// get index and position based on mouse location
 			var team = d.id;
-			var index = Math.round(xScale.invert(x));
+			var index = Math.round(xScale[year].invert(x));
 			var position = d.values.filter(c => c.index == index)[0].position;
 			
 			// lookup date
@@ -215,22 +279,22 @@ function allSeasons(year){
 
 	  	
 	  	// populate the tip
-	  	$(".tip").show();
-	  	$(".tip").empty();
-	  	$(".tip").addClass("show-" + position);
-	  	$(".tip").append("<div class='title'>" + team + "</div>");
-	  	$(".tip").append("<div class='date'>" + formatDate(date) + "</div>");
-	  	$(".tip").append("<div class='position'>" + position + suffix + " place</div>");
-	  	$(".tip").append("<table class='wl-table'><tr class='head'><td>Wins</td><td>Losses</td></tr><tr><td>" + wins + "</td><td>" + losses+ "</td></tr></table>")
+	  	$(".viz-wrapper.vw-" + year + " .tip").show();
+	  	$(".viz-wrapper.vw-" + year + " .tip").empty();
+	  	$(".viz-wrapper.vw-" + year + " .tip").addClass("show-" + position);
+	  	$(".viz-wrapper.vw-" + year + " .tip").append("<div class='title'>" + team + "</div>");
+	  	$(".viz-wrapper.vw-" + year + " .tip").append("<div class='date'>" + formatDate(date) + "</div>");
+	  	$(".viz-wrapper.vw-" + year + " .tip").append("<div class='position'>" + position + suffix + " place</div>");
+	  	$(".viz-wrapper.vw-" + year + " .tip").append("<table class='wl-table'><tr class='head'><td>Wins</td><td>Losses</td></tr><tr><td>" + wins + "</td><td>" + losses+ "</td></tr></table>")
 
 	  	// position the tip
 	  	// top
-	  	var tip_top = $(".viz-wrapper.vw-" + year).offset().top - $(".tip").height();
+	  	var tip_top = $(".viz-wrapper.vw-" + year).offset().top - $(".viz-wrapper.vw-" + year + " .tip").height();
 	  	
 	  	// left
 	  	// determine left side of svg
 	  	var svg_left = (window.innerWidth / 2) - (width / 2);
-	  	var tip_left = xScale(index) - 15;
+	  	var tip_left = xScale[year](index) - 15;
 
 	  	$(".tip").css({
 	  		top: tip_top - 10,
@@ -243,67 +307,74 @@ function allSeasons(year){
 	  // highlight selected
 	  function highlight(state_slug){
 
-	  	d3.selectAll(".team.unset .line-out")
+	  	d3.selectAll(".viz-wrapper.vw-" + year + " .team.unset .line-out")
 	  			.style("opacity", ".2");
 	  	
-	  	d3.selectAll(".team.unset .line")
+	  	d3.selectAll(".viz-wrapper.vw-" + year + " .team.unset .line")
 	  		.style("opacity", ".2");
 
-	  	d3.select(".line-out." + state_slug)
+	  	d3.select(".viz-wrapper.vw-" + year + " .line-out." + state_slug)
 	  			.style("opacity", stroke_on.opacity)
 	  			.style("stroke-width", stroke_on.width + 6);
 
-	  	d3.select(".line." + state_slug)
+	  	d3.select(".viz-wrapper.vw-" + year + " .line." + state_slug)
 	  			.style("opacity", stroke_on.opacity)
 	  			.style("stroke-width", stroke_on.width);
 	  	
-	  	d3.select(".team." + state_slug).moveToFront();
+	  	d3.select(".viz-wrapper.vw-" + year + " .team." + state_slug).moveToFront();
 
-  	}
+		}
 
-  	// FUNCTION WHEN MOUSE OUT OF A TEAM
+		// FUNCTION WHEN MOUSE OUT OF A TEAM
 	  function mouseout(){
-
 
 	  	// if no teams are set, show them all
 	  	if (!$(".team").hasClass("set")){
 	  	
-		  	d3.selectAll(".team.unset .line-out")
+		  	d3.selectAll(".viz-wrapper.vw-" + year + " .team.unset .line-out")
 		  			.style("opacity", stroke_off.opacity)
 		  			.style("stroke-width", stroke_off.width + 4)
-	
-		  	d3.selectAll(".team.unset .line")
+
+		  	d3.selectAll(".viz-wrapper.vw-" + year + " .team.unset .line")
 		  			.style("opacity", stroke_off.opacity)
 		  			.style("stroke-width", stroke_off.width)
 
 	  	} else {
 
-		  	d3.selectAll(".team.unset .line-out")
+		  	d3.selectAll(".viz-wrapper.vw-" + year + " .team.unset .line-out")
 		  			.style("opacity", ".2")
 		  			.style("stroke-width", stroke_off.width + 4)
-	
-		  	d3.selectAll(".team.unset .line")
+
+		  	d3.selectAll(".viz-wrapper.vw-" + year + " .team.unset .line")
 		  			.style("opacity", ".2")
 		  			.style("stroke-width", stroke_off.width)
 
-		  	d3.select(".team.set").moveToFront();
+		  	d3.select(".viz-wrapper.vw-" + year + " .team.set").moveToFront();
 
 	  	}
 
-	  	$(".tip").hide();
+	  	$(".viz-wrapper.vw-" + year + " .tip").hide();
 	  
 
 	  }
-	} // end ready()
+  } // end draw()
 
-	function slugify(text) {
-	  return text.toString().toLowerCase()
-	    .replace(/\s+/g, '-')           // Replace spaces with -
-	    .replace(/[^\w\-]+/g, '')       // Remove all non-word chars
-	    .replace(/\-\-+/g, '-')         // Replace multiple - with single -
-	    .replace(/^-+/, '')             // Trim - from start of text
-	    .replace(/-+$/, '');            // Trim - from end of text
-	}
+  
+} // end ready()
+
+
+
+// allSeasons(years[0]);
+
+
+
+function slugify(text) {
+  return text.toString().toLowerCase()
+    .replace(/\s+/g, '-')           // Replace spaces with -
+    .replace(/[^\w\-]+/g, '')       // Remove all non-word chars
+    .replace(/\-\-+/g, '-')         // Replace multiple - with single -
+    .replace(/^-+/, '')             // Trim - from start of text
+    .replace(/-+$/, '');            // Trim - from end of text
 }
 
 // date parser
