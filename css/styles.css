@@ -1,13 +1,41 @@
 body {
 	background :#fff;
-	margin-top: 500px;
 }
 
-#info {
-	height: 25px;
+#titles {
+	font-family: "PT Serif", serif;
+	text-align: center;
+	margin-top: 20px;
+	margin-bottom: 60px;
+}
+#titles .headline {
+	font-size: 2em;
+	font-weight: bold;
+	margin-bottom: 20px;
+}
+#titles .byline {
+	font-size: 1.4em;
+}
+#titles .dateline {
+	font-size: 1.2em;
+}
+
+#all-seasons-select select {
 	margin: 0 auto;
 	display: table;
 }
+.chosen-container {
+	margin: 20px auto;
+	display: table;
+}
+
+hr.blue-line {
+	width: 220px;
+	margin-top: 8px;
+	margin-bottom:8px;
+	border: 2px solid #48a2d7
+}
+
 
 #viz-wrapper {
 	margin: 0 auto;
@@ -23,6 +51,7 @@ body {
 .axis .time-label {
 	font-size: 1.5em;
 	font-weight: bold;
+	fill: #3a403d;
 }
 
 .line, .line-out {
@@ -35,10 +64,22 @@ body {
 	padding: 10px;
 	position: absolute;
 	text-align: center;
-	min-width: 200px;
-	max-width: 250px;
+	width: 200px;
 	/*border-radius: 5px;*/
 	box-shadow: 2px 2px 6px rgba(0, 0, 0, .5);
+}
+.tip:after {
+  content:'';
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  width: 0;
+  height: 0;
+  border-top: solid 15px #fff;
+  border-left: solid 15px transparent;
+  border-right: solid 15px transparent;
 }
 .tip .title {
 	font-weight: bold;

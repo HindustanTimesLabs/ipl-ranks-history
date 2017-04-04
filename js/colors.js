@@ -25,8 +25,8 @@ var colors = [{
 },
 {
 	slug:"rajasthan-royals",
-	color:"#254aa5",
-	bg: "#cba92b"
+	color:"#cba92b",
+	bg: "#254aa5"
 },
 {
 	slug:"mumbai-indians",

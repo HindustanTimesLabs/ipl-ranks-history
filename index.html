@@ -16,9 +16,11 @@
 
 		<!-- css cdns, use as needs -->
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
-		<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.0/themes/smoothness/jquery-ui.css">
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.7.0/chosen.min.css" />
+		<!-- <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.0/themes/smoothness/jquery-ui.css"> -->
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" />
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/fonts/FontAwesome.otf" />
+
 
 		<!-- custom css -->
 		<!-- Rembember to Minify! -->
@@ -46,9 +48,31 @@
 			</div>
 		</nav>
 		<div class="container-fluid">
+			<div id="titles">
+				<div class="headline">The Indian Premier League: A visual history</div>
+				<div class="byline">By Harry Stevens</div>
+				<hr class="blue-line">
+				<div class="dateline">5 April, 2017</div>
+			</div>
 			<div id="patterns"></div>
-			<div id="info"></div>
-			<div id="viz-wrapper"></div>
+			<div id="all-seasons-select">
+				<select data-placeholder="Choose a team..."></select>
+			</div>
+
+			<div id="story">
+				<div class="viz-wrapper vw-all"></div>
+				<div class="viz-wrapper vw-2009"></div>
+				<div class="viz-wrapper vw-2010"></div>
+				<div class="viz-wrapper vw-2011"></div>
+				<div class="viz-wrapper vw-2012"></div>
+				<div class="viz-wrapper vw-2013"></div>
+				<div class="viz-wrapper vw-2014"></div>
+				<div class="viz-wrapper vw-2015"></div>
+				<div class="viz-wrapper vw-2016"></div>	
+			</div>
+
+			
+			
 			<!-- <svg width="960" height="600"></svg> -->
 		</div>
 		<footer class="footer-basic-centered">
@@ -68,6 +92,7 @@
 		</footer>
 		<!-- js cdns, use as needed -->
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.7.0/chosen.jquery.min.js"></script>
 <!-- 		<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.0/jquery-ui.min.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui-touch-punch/0.2.3/jquery.ui.touch-punch.min.js"></script>
  -->		
