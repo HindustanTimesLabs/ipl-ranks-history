@@ -1,0 +1,87 @@
+body {
+	background :#fff;
+}
+
+#info {
+	height: 25px;
+	margin: 0 auto;
+	display: table;
+}
+
+#viz-wrapper {
+	margin: 0 auto;
+	display: table;
+}
+
+.axis {
+	font-family: "Open Sans", sans-serif;
+}
+.axis--x path {
+  display: none;
+}
+.axis .time-label {
+	font-size: 1.5em;
+	font-weight: bold;
+}
+
+.line, .line-out {
+  fill: none;
+}
+
+.tip {
+	background: #fff;
+	border: 1px solid #ddd;
+	padding: 10px;
+	position: absolute;
+	text-align: center;
+	min-width: 200px;
+	max-width: 250px;
+	/*border-radius: 5px;*/
+	box-shadow: 2px 2px 6px rgba(0, 0, 0, .5);
+}
+.tip .title {
+	font-weight: bold;
+}
+.tip .date {
+	font-size: .8em;
+	color: #888;
+	margin-bottom: 10px;
+}
+.tip .position {
+	font-size: .9em;
+}
+.tip .wl-table {
+	width: 100%;
+}
+.tip .wl-table tr.head {
+	font-size: .8em;
+	color: #888;
+}
+.tip .wl-table td {
+	width: 50%;
+}
+
+.axis.axis--y .domain {
+	display: none;
+}
+
+
+/* Large Devices, Wide Screens */
+@media only screen and (max-width: 1200px) {
+}
+
+/* Medium Devices, Desktops */
+@media only screen and (max-width: 992px) {
+}
+
+/* Small Devices, Tablets */
+@media only screen and (max-width: 768px) {
+}
+
+/* Extra Small Devices, Phones */
+@media only screen and (max-width: 480px) {
+}
+
+/* Custom, iPhone Retina */
+@media only screen and (max-width: 320px) {
+}
