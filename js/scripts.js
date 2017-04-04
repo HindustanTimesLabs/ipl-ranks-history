@@ -40,7 +40,6 @@ var tickValues_obj = {
 	"2008" : [1,14]
 }
 
-
 // a bunch of awesome objects
 var positions_filtered = {},
 	year_indexes = {},
@@ -62,6 +61,98 @@ d3.queue()
 
 function ready(error, positions, lookup, stats) {
   if (error) throw error;
+
+  // populate legend
+  $("#all-teams").width("100%");
+  $("#legend").width("100%");
+
+  // var teams = _.chain(stats).pluck("team").uniq().value().sort();
+
+  // var swatch_dim = 10;
+  // var swatch_pad = 0;
+
+  // teams.forEach(function(d){
+
+  // 	$("#all-teams").append("<div class='legend-item legend-item-" + slugify(d) + "'><svg class='legend-swatch'><rect fill='" + _.where(colors, {slug: slugify(d)})[0].bg + "' x='0' y='0' height='" + (swatch_dim + swatch_pad) + "' width='" + (swatch_dim + swatch_pad) + "'></rect><rect fill='url(#diagonalHatch-" + slugify(d) + ")' x='0' y='0' height='" + swatch_dim + "'width='" + swatch_dim + "'></rect></svg>" + d + "</div>");
+
+  // });
+
+  var legend_offset = $("#legend").offset().top;
+  $(window).scroll(() => {
+
+  		scrollSpy();
+
+  });
+
+  scrollSpy()
+
+  function scrollSpy(){
+
+  	var nav_height = $(".navbar").height();
+  	
+  	var window_offset = $(window).scrollTop();
+
+  	if (window_offset >= legend_offset - nav_height){
+  		// $(".navbar").css({
+  		// 	"position": "absolute",
+  		// 	"top": window_offset
+  		// });
+  		// $("body").css("margin-top", "0")
+  		$("#legend").css({
+  			"position": "fixed",
+  			"top" : nav_height,
+  			// "background": "#fff",
+  			"left": 0,
+  			// "box-shadow": "0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)"
+  		});
+
+  		$("#story").css({
+  			"margin-top": $("#legend").height()
+  		});
+  	} else {
+  		// $(".navbar").addClass("navbar-fixed-top");
+  		// $("body").css("margin-top", nav_height)
+  		$("#legend").css({
+  			"position": "static",
+  			"box-shadow": "none"
+  		});
+
+  		$("#story").css({
+  			"margin-top": 0
+  		});
+  	}
+
+  }
+
+	// var leg = d3.select("#all-teams");
+
+
+
+	// leg.selectAll(".legend-swatch")
+	// 		.data(teams)
+	// 		.enter()
+	// 		.append("rect")
+	// 		.attr("class", "legend-swatch")
+	// 		.attr("x", 2)
+	// 		.attr("y", 0)
+	// 		.attr("height", 10)
+	// 		.attr("width", 10)
+	// 		.attr("fill", d => "url(#diagonalHatch-" + slugify(d) + ")");
+
+	// leg.selectAll(".legend-swatch-out")
+	// 	.data(teams)
+	// 	.enter()
+	// 	.append("rect")
+	// 	.attr("class", "legend-swatch")
+	// 	.attr("x", (d,i) => i * 10)
+	// 	.attr("y", 0)
+	// 	.attr("height", 14)
+	// 	.attr("width", 14)
+	// 	.attr("fill", d => "url(#diagonalHatch-" + slugify(d) + ")")
+
+  // teams.forEach(d => {
+  // 	$("#all-teams").append("<rect x='0' y='0' width='10' height='10' fill='green'></rect>")
+  // });
 
   years.forEach(draw);
 

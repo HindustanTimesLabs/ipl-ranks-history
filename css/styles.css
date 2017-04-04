@@ -21,12 +21,15 @@ body {
 }
 
 #all-seasons-select select {
-	margin: 0 auto;
+	margin: auto;
 	display: table;
+	margin-bottom: 0px;
 }
 .chosen-container {
-	margin: 20px auto;
+	margin: 5px auto;
 	display: table;
+	/*margin-top: 5px;
+	margin-bottom: 10px;*/
 }
 
 hr.blue-line {
@@ -107,6 +110,27 @@ hr.blue-line {
 	display: none;
 }
 
+#all-teams {
+	text-align: center;
+	/*margin: 0 ;*/
+}
+.legend-item {
+	display: inline-block;
+	font-size: .8em;
+	margin-left: 1.6em;
+}
+.legend-swatch {
+	width: 10px;
+	height: 10px;
+	margin-right: 4px;
+}
+
+.year-title {
+	font-weight: bold;
+	font-size: 1.5em;
+	text-align: center;
+	margin: 30px;
+}
 
 /* Large Devices, Wide Screens */
 @media only screen and (max-width: 1200px) {
