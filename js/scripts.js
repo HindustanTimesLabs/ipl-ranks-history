@@ -41,7 +41,7 @@ function vertical(){
 		yScale = d3.scaleLinear().range([height, 0]);
 
 	var xAxis = d3.axisTop(xScale)
-			.ticks(10);
+			.ticks(16);
 
 // d3.curveCatmullRom.alpha(1)
 //d3.curveStepAfter

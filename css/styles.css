@@ -18,7 +18,7 @@ body {
 	font-family: "Open Sans", sans-serif;
 }
 .axis--x path {
-  display: none;
+  /*display: none;*/
 }
 .axis .time-label {
 	font-size: 1.5em;
@@ -62,7 +62,7 @@ body {
 	width: 50%;
 }
 
-.axis.axis--y .domain {
+.axis .domain {
 	display: none;
 }
 
