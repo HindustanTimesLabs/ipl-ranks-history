@@ -132,36 +132,6 @@ function ready(error, positions, lookup, stats) {
 
   }
 
-	// var leg = d3.select("#all-teams");
-
-
-
-	// leg.selectAll(".legend-swatch")
-	// 		.data(teams)
-	// 		.enter()
-	// 		.append("rect")
-	// 		.attr("class", "legend-swatch")
-	// 		.attr("x", 2)
-	// 		.attr("y", 0)
-	// 		.attr("height", 10)
-	// 		.attr("width", 10)
-	// 		.attr("fill", d => "url(#diagonalHatch-" + slugify(d) + ")");
-
-	// leg.selectAll(".legend-swatch-out")
-	// 	.data(teams)
-	// 	.enter()
-	// 	.append("rect")
-	// 	.attr("class", "legend-swatch")
-	// 	.attr("x", (d,i) => i * 10)
-	// 	.attr("y", 0)
-	// 	.attr("height", 14)
-	// 	.attr("width", 14)
-	// 	.attr("fill", d => "url(#diagonalHatch-" + slugify(d) + ")")
-
-  // teams.forEach(d => {
-  // 	$("#all-teams").append("<rect x='0' y='0' width='10' height='10' fill='green'></rect>")
-  // });
-
   years.forEach(draw);
 
   function draw(year){
@@ -301,24 +271,6 @@ function ready(error, positions, lookup, stats) {
 	      .attr("class", "axis axis--y")
 	      .call(yAxisRight[year])
 	      .attr("transform", "translate(" + width + "," + 0 + ")")
-	  
-	  // yAxisElRight.append("text")
-	  // 		.attr("class", "time-label")
-	  //     .attr("transform", "rotate(-90)")
-	  //     .attr("y", -margin.left + 30)
-	  //     .attr("dy", "0.71em")
-	  //     .attr("fill", "#000")
-	  //     .text("Best →");
-
-	  // yAxisElRight.append("text")
-	  // 		.attr("class", "time-label")
-	  // 		.attr("transform", "rotate(-90)")
-	  //     .attr("y", -margin.left + 30)
-	  //     .attr("x", -height)
-	  //     .attr("text-anchor", "start")
-	  //     .attr("dy", "0.71em")
-	  //     .attr("fill", "#000")
-	  //     .text("← Worst");
 
 	  var team = g[year].selectAll(".team")
 	    .data(teams)
@@ -511,11 +463,6 @@ function ready(error, positions, lookup, stats) {
 } // end ready()
 
 
-
-// allSeasons(years[0]);
-
-
-
 function slugify(text) {
   return text.toString().toLowerCase()
     .replace(/\s+/g, '-')           // Replace spaces with -
@@ -552,70 +499,3 @@ function formatYear(date){
 		return "20" + spl[2];
 	}
 }
-
-
-
-
-
-
-
-
-
-// data parser
-
-// var width = window.innerWidth, height = 600;
-
-// var svg = d3.select("#viz").append("svg")
-// 		.attr("width", width)
-// 		.attr("height", height);
-
-// // scales
-// var xScale = d3.scaleTime()
-// 		.range([0, width]);
-
-// var yScale = d3.scaleLinear()
-// 		.range([height, 0]);
-
-// // axes
-// var xAxis = d3.axisBottom(xScale)
-// 	.ticks(d3.timeWeek.every(15))
-
-// var line = d3.line()
-//     .x(function(d) { return xScale(d.date); })
-//     .y(function(d) { return yScale(d.position); });
-//     // .curve(d3.curveBasis)
-
-// // load data
-
-// d3.csv("data/data.csv", types, (error, data) => {
-
-// 	data = _.sortBy(data, "date_format");
-
-// 	var teams = _.chain(data).pluck("team").uniq().value();
-
-// 	var parsed = _.chain(data).pluck("date").uniq().value().map((date, index) => {
-
-// 		var obj = {};
-// 		obj.date = date;
-// 		obj.index = index + 1;
-
-// 		// teams.forEach(team => {
-// 		// 	var filter = data.filter(c => c.date == date && c.team == team); 
-// 		// 	obj[team] = filter[0] ? filter[0].position : "NA" ;
-// 		// });
-
-// 		return obj;
-
-// 	});
-
-// 	document.write(JSON.stringify(parsed));
-
-
-// });
-
-// function types(d){
-// 	d.date_format = new Date(d.date);
-// 	d.position = +d.position;
-// 	d.year = d.date_format.getFullYear();
-// 	return d;
-// }
