@@ -136,6 +136,7 @@ hr.blue-line {
 .copy {
 	max-width: 600px;
 	margin: auto;
+	margin-bottom: 30px;
 }
 .body-select {
 	font-weight: bold;

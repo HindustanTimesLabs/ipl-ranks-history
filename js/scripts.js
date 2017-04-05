@@ -355,7 +355,7 @@ function ready(error, positions, lookup, stats) {
 	  $(document).on("mouseover", ".body-select", function(){
 	  	var val = $(this).attr("team");
 	  	console.log(val);
-	  	highlight(val);
+	  	highlight(val, year);
 	  }).mouseout(function(){
 	  	mouseout();
 	  });
