@@ -161,8 +161,19 @@ hr.blue-line {
 
 /* Small Devices, Tablets */
 @media only screen and (max-width: 768px) {
+	html, body {
+		max-width: 100%;
+    overflow-x: hidden;
+	}
 	.hide-mobile {
 		display: none;
+	}
+	#legend {
+		display: none;
+	}
+	.related-wrapper {
+		padding-left: 10px;
+		padding-right: 10px;
 	}
 }
 

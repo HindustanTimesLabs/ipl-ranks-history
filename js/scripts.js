@@ -1,10 +1,13 @@
 var win_width = $(window).width();
 
-if (win_width < 768){
-	$(".click-tap").html("tap")
+if (win_width <= 768){
+	$(".click-tap").html("Tap")
+	$(".body-select a").attr("href", "javascript: void(0)")
 } else {
 	$(".click-tap").html("drag your cursor over")
 }
+
+
 
 var	margin = {top: 40, right:70, bottom: 20, left: 70},
 		width = window.innerWidth - margin.left - margin.right;
@@ -86,13 +89,16 @@ function ready(error, positions, lookup, stats) {
   // });
 
   var legend_offset = $("#legend").offset().top;
-  $(window).scroll(function() {
 
-  		scrollSpy();
-
-  });
-
-  scrollSpy()
+  if (win_width > 768){
+    $(window).scroll(function() {
+  
+    		scrollSpy();
+  
+    });
+  
+    scrollSpy();
+  }
 
   function scrollSpy(){
 
@@ -101,25 +107,19 @@ function ready(error, positions, lookup, stats) {
   	var window_offset = $(window).scrollTop();
 
   	if (window_offset >= legend_offset - nav_height){
-  		// $(".navbar").css({
-  		// 	"position": "absolute",
-  		// 	"top": window_offset
-  		// });
-  		// $("body").css("margin-top", "0")
+
   		$("#legend").css({
   			"position": "fixed",
   			"top" : nav_height,
   			"background": "rgba(255, 255, 255, 0.9)",
-  			"left": 0,
-  			// "box-shadow": "0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)"
+  			"left": 0
   		});
 
   		$("#story").css({
   			"margin-top": $("#legend").height()
   		});
   	} else {
-  		// $(".navbar").addClass("navbar-fixed-top");
-  		// $("body").css("margin-top", nav_height)
+
   		$("#legend").css({
   			"position": "static",
   			"box-shadow": "none"
@@ -144,15 +144,15 @@ function ready(error, positions, lookup, stats) {
 
   	// get list of indexes for the year
   	if (year != "all"){
-  		year_indexes[year] = lookup_obj[year].filter(d => d.year == year).map(d => d.index.toString());
+  		year_indexes[year] = lookup_obj[year].filter(function(d){ return d.year == year; }).map(function(d){ return  d.index.toString(); });
   	} else {
-  		year_indexes[year] = lookup_obj[year].map(d => d.index.toString());
+  		year_indexes[year] = lookup_obj[year].map(function(d){ return d.index.toString()});
   	}
   	
   	// filter the positions by year
-  	year_indexes[year].forEach(d => {
+  	year_indexes[year].forEach(function(d) {
   		
-  		var curr_position = positions_obj[year].filter((c) => {			
+  		var curr_position = positions_obj[year].filter(function(c) {			
   			return c.index == d
   		});
 
@@ -216,16 +216,16 @@ function ready(error, positions, lookup, stats) {
 	    };
 	  });
 
-	  xScale[year].domain(d3.extent(draw_positions, d => +d.index));
+	  xScale[year].domain(d3.extent(draw_positions, function(d){ return +d.index; }));
 
 		yScale[year].domain([
 	    d3.max(teams, function(c) { return d3.max(c.values, function(d) { return d.position; }); }),
 	    d3.min(teams, function(c) { return d3.min(c.values, function(d) { return d.position; }); })
 	  ]);
 
-		xAxis[year].tickFormat(d => {
+		xAxis[year].tickFormat(function(d) {
 
-			var unformatted_date = lookup.filter(c => c.index == d)[0].date;
+			var unformatted_date = lookup.filter(function(c) { return c.index == d; })[0].date;
 
 			return year == "all" ? formatYear(unformatted_date) : formatMonth(unformatted_date);
 		});
@@ -283,7 +283,11 @@ function ready(error, positions, lookup, stats) {
 	  team.append("path")
 	      .attr("class", function(d) { return "line-out " + slugify(d.id); })
 	      .attr("d", function(d) { return line[year](d.values); })
-	      .style("stroke", d => colors.filter(c => c.slug == slugify(d.id))[0].bg)
+	      .style("stroke", function(d) {
+	      	return colors.filter(function(c){
+	      		return c.slug == slugify(d.id)
+	      	})[0].bg
+	      })
 	      .style("stroke-width", stroke_off.width + 4)
 	      .style("opacity", stroke_off.opacity)
 	      .on("mouseover", mouseover)
@@ -293,9 +297,8 @@ function ready(error, positions, lookup, stats) {
 	  team.append("path")
 	      .attr("class", function(d) { return "line " + slugify(d.id); })
 	      .attr("d", function(d) { return line[year](d.values); })
-	      .style("stroke", d=> {
-	      	// return colors.filter(c => c.slug == slugify(d.id))[0].color
-	      	return "url(#diagonalHatch-" + slugify(d.id) + ")"
+	      .style("stroke", function(d) {
+	      	return "url(#diagonalHatch-" + slugify(d.id) + ")";
 	      })
 	      .style("stroke-width", stroke_off.width)
 	      .style("opacity", stroke_off.opacity)
@@ -312,15 +315,6 @@ function ready(error, positions, lookup, stats) {
 	  	mouseout();
 	  });
 
-
-	  // $(".body-select").mouseover(()=>{
-	  // 	console.log($(this));
-	  // 	var val = $(this).attr("data-team");
-	  // 	console.log(val);
-	  // 	highlight(val);
-	  // }).mouseout(()=>{
-	  // 	mouseout();
-	  // })
 
 	 	// create a select box
 	 	$("#all-seasons-select select").append("<option></option>")
@@ -360,13 +354,13 @@ function ready(error, positions, lookup, stats) {
 			// get index and position based on mouse location
 			var team = d.id;
 			var index = Math.round(xScale[year].invert(x));
-			var position = d.values.filter(c => c.index == index)[0].position;
+			var position = d.values.filter(function(c){ return c.index == index; })[0].position;
 			
 			// lookup date
-			var date = lookup.filter(c => c.index == index)[0].date;
+			var date = lookup.filter(function(c){ return c.index == index; })[0].date;
 
 	  	// lookup more data
-	  	var date_stats = stats.filter(c => c.date == date && c.team == team)[0];
+	  	var date_stats = stats.filter(function(c) { return c.date == date && c.team == team; })[0];
 	  	if (date_stats != undefined){
 		  	var wins = date_stats.wins;
 		  	var losses = date_stats.losses;
@@ -399,7 +393,7 @@ function ready(error, positions, lookup, stats) {
 	  	$(".tip").css({
 	  		top: tip_top - 10,
 	  		left: tip_left,
-	  		border: "2px solid " + colors.filter(c => slugify(d.id) == c.slug)[0].bg
+	  		border: "2px solid " + colors.filter(function(c){ return slugify(d.id) == c.slug; })[0].bg
 	  	});
 
 	  }
