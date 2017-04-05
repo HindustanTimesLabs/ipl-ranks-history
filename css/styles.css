@@ -140,6 +140,14 @@ hr.blue-line {
 .body-select {
 	font-weight: bold;
 	cursor: pointer;
+	border-bottom: 1px dotted #000;;
+}
+.body-select a:hover, .body-select a:active, .body-select a:visited {
+	text-decoration: none;
+}
+
+.related-wrapper {
+	margin-top: 40px;
 }
 
 /* Large Devices, Wide Screens */
@@ -152,6 +160,9 @@ hr.blue-line {
 
 /* Small Devices, Tablets */
 @media only screen and (max-width: 768px) {
+	.hide-mobile {
+		display: none;
+	}
 }
 
 /* Extra Small Devices, Phones */

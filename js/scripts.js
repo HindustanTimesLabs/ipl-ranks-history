@@ -36,15 +36,15 @@ colors.forEach(function(d){
 var years = ["all","2016","2015","2014","2013","2012","2011","2010","2009","2008"];
 
 var tickValues_obj = {
-	"all" : [1,43,78,118,164,212,260,298,339],
-	"2016" : [339,361],
-	"2015" : [298,321],
-	"2014" : [260,275],
-	"2013" : [212, 240],
-	"2012" : [164,191],
-	"2011" : [118,141],
-	"2010" : [78,98],
-	"2009" : [43,56],
+	"all" : [1,46,84,128,178,230,282,324,369],
+	"2016" : [369, 391],
+	"2015" : [324, 347],
+	"2014" : [282, 297],
+	"2013" : [230, 258],
+	"2012" : [178,205],
+	"2011" : [128,151],
+	"2010" : [84,104],
+	"2009" : [46,59],
 	"2008" : [1,14]
 }
 
@@ -86,7 +86,7 @@ function ready(error, positions, lookup, stats) {
   // });
 
   var legend_offset = $("#legend").offset().top;
-  $(window).scroll(() => {
+  $(window).scroll(function() {
 
   		scrollSpy();
 
@@ -200,6 +200,7 @@ function ready(error, positions, lookup, stats) {
   		yScale = {},
   		xAxis = {},
   		yAxis = {},
+  		yAxisRight = {},
   		line = {};
 
   	svg[year] = d3.select(".viz-wrapper.vw-" + year).append("svg")
@@ -217,6 +218,7 @@ function ready(error, positions, lookup, stats) {
 				.tickSizeInner(-height - margin.bottom);
 
 		yAxis[year] = d3.axisLeft(yScale[year]).ticks(year == "all" ? 10 : 8);
+		yAxisRight[year] = d3.axisRight(yScale[year]).ticks(year == "all" ? 10 : 8);
 
 		line[year] = d3.line()
 		    .curve(d3.curveBundle.beta(1))
@@ -255,7 +257,7 @@ function ready(error, positions, lookup, stats) {
 
 			var unformatted_date = lookup.filter(c => c.index == d)[0].date;
 
-			return year == "all" ? formatYear(unformatted_date) + "→" : formatMonth(unformatted_date) + "→";
+			return year == "all" ? formatYear(unformatted_date) : formatMonth(unformatted_date);
 		});
 
 	  var xAxisEl = g[year].append("g")
@@ -294,6 +296,29 @@ function ready(error, positions, lookup, stats) {
 	      .attr("dy", "0.71em")
 	      .attr("fill", "#000")
 	      .text("← Worst");
+
+	 	var yAxisElRight = g[year].append("g")
+	      .attr("class", "axis axis--y")
+	      .call(yAxisRight[year])
+	      .attr("transform", "translate(" + width + "," + 0 + ")")
+	  
+	  // yAxisElRight.append("text")
+	  // 		.attr("class", "time-label")
+	  //     .attr("transform", "rotate(-90)")
+	  //     .attr("y", -margin.left + 30)
+	  //     .attr("dy", "0.71em")
+	  //     .attr("fill", "#000")
+	  //     .text("Best →");
+
+	  // yAxisElRight.append("text")
+	  // 		.attr("class", "time-label")
+	  // 		.attr("transform", "rotate(-90)")
+	  //     .attr("y", -margin.left + 30)
+	  //     .attr("x", -height)
+	  //     .attr("text-anchor", "start")
+	  //     .attr("dy", "0.71em")
+	  //     .attr("fill", "#000")
+	  //     .text("← Worst");
 
 	  var team = g[year].selectAll(".team")
 	    .data(teams)
@@ -390,8 +415,10 @@ function ready(error, positions, lookup, stats) {
 
 	  	// lookup more data
 	  	var date_stats = stats.filter(c => c.date == date && c.team == team)[0];
-	  	var wins = date_stats.wins;
-	  	var losses = date_stats.losses;
+	  	if (date_stats != undefined){
+		  	var wins = date_stats.wins;
+		  	var losses = date_stats.losses;
+	  	}
 
 	  	var suffix = position == 1 ? "st" : position == 2 ? "nd" : position == 3 ? "rd" : "th";
 
@@ -403,7 +430,10 @@ function ready(error, positions, lookup, stats) {
 	  	$(".viz-wrapper.vw-" + year + " .tip").append("<div class='title'>" + team + "</div>");
 	  	$(".viz-wrapper.vw-" + year + " .tip").append("<div class='date'>" + formatDate(date) + "</div>");
 	  	$(".viz-wrapper.vw-" + year + " .tip").append("<div class='position'>" + position + suffix + " place</div>");
-	  	$(".viz-wrapper.vw-" + year + " .tip").append("<table class='wl-table'><tr class='head'><td>Wins</td><td>Losses</td></tr><tr><td>" + wins + "</td><td>" + losses+ "</td></tr></table>")
+	  	
+	  	if (date_stats != undefined){
+	  		$(".viz-wrapper.vw-" + year + " .tip").append("<table class='wl-table'><tr class='head'><td>Wins</td><td>Losses</td></tr><tr><td>" + wins + "</td><td>" + losses+ "</td></tr></table>")
+	  	}
 
 	  	// position the tip
 	  	// top

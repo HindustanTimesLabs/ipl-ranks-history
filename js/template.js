@@ -1,6 +1,6 @@
 // meta tags
-var twitterStatus = '';
-var hashtags = '';
+var twitterStatus = 'A visual history of the first nine years of @IPL';
+var hashtags = 'IPL2017';
 
 $(document).ready(function(){
   // calc breakpoint
