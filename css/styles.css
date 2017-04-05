@@ -26,7 +26,7 @@ body {
 	margin-bottom: 0px;
 }
 .chosen-container {
-	margin: 5px auto;
+	margin: 8px auto;
 	display: table;
 	/*margin-top: 5px;
 	margin-bottom: 10px;*/
@@ -40,9 +40,8 @@ hr.blue-line {
 }
 
 
-#viz-wrapper {
-	margin: 0 auto;
-	display: table;
+.viz-wrapper {
+	margin-bottom: 20px;
 }
 
 .axis {
@@ -128,9 +127,19 @@ hr.blue-line {
 .year-title {
 	font-family: "PT Serif", serif;
 	font-weight: bold;
-	font-size: 1.5em;
+	font-size: 1.9em;
 	text-align: center;
-	margin: 30px;
+	margin-top: 50px;
+	margin-bottom: 10px;
+}
+
+.copy {
+	max-width: 600px;
+	margin: auto;
+}
+.body-select {
+	font-weight: bold;
+	cursor: pointer;
 }
 
 /* Large Devices, Wide Screens */

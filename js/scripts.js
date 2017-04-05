@@ -1,3 +1,11 @@
+var win_width = $(window).width();
+
+if (win_width < 768){
+	$(".click-tap").html("tap")
+} else {
+	$(".click-tap").html("drag your cursor over")
+}
+
 var	margin = {top: 40, right:70, bottom: 20, left: 70},
 		width = window.innerWidth - margin.left - margin.right;
 		height = 190 - margin.top - margin.bottom;
@@ -101,7 +109,7 @@ function ready(error, positions, lookup, stats) {
   		$("#legend").css({
   			"position": "fixed",
   			"top" : nav_height,
-  			// "background": "#fff",
+  			"background": "rgba(255, 255, 255, 0.9)",
   			"left": 0,
   			// "box-shadow": "0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)"
   		});
@@ -317,6 +325,25 @@ function ready(error, positions, lookup, stats) {
 	      .on("mousemove", mouseover)
 	      .on("mouseout", mouseout);
 
+
+	  // body select
+	  $(document).on("mouseover", ".body-select", function(){
+	  	var val = $(this).attr("team");
+	  	console.log(val);
+	  	highlight(val);
+	  }).mouseout(function(){
+	  	mouseout();
+	  });
+
+
+	  // $(".body-select").mouseover(()=>{
+	  // 	console.log($(this));
+	  // 	var val = $(this).attr("data-team");
+	  // 	console.log(val);
+	  // 	highlight(val);
+	  // }).mouseout(()=>{
+	  // 	mouseout();
+	  // })
 
 	 	// create a select box
 	 	$("#all-seasons-select select").append("<option></option>")
